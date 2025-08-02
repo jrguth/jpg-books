@@ -16,3 +16,12 @@ public class CreateUserDTO
 
     public string? Name { get; init; }
 }
+
+public class LoginDTO
+{
+    [Required]
+    public string EmailOrUsername { init; get; }
+
+    [Required]
+    public string Password { init; get; }
+}

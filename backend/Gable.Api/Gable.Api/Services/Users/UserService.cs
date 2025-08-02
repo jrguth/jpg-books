@@ -43,4 +43,17 @@ public class UserService
         return user;
     }
 
+    public async Task<User> ValidateLogin(LoginDTO loginDTO)
+    {
+        // Try to find user
+        User? user = await _gableDb.Users
+            .FirstOrDefaultAsync(u => u.Email == loginDTO.EmailOrUsername || u.UserName == loginDTO.EmailOrUsername);
+
+        if (null == user) throw new UserDoesNotExistException();
+
+        if (user.PasswordHash != BCrypt.Net.BCrypt.HashPassword(loginDTO.Password)) throw new InvalidPasswordException();
+
+        return user;
+    }
+
 }
