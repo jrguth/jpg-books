@@ -47,12 +47,19 @@ services
         };
     });
 
+services.AddControllers();
 services.AddSingleton<JwtService>();
 var app = builder.Build();
 
 app
+    .UseRouting()
+    .UseCors()
     .UseAuthentication()
-    .UseAuthorization();
+    .UseAuthorization()
+    .UseEndpoints(endpoints =>
+    {
+        endpoints.MapControllers();
+    });
 
 app.UseHttpsRedirection();
 

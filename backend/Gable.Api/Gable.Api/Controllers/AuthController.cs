@@ -5,8 +5,5 @@ namespace Gable.Api.Controllers;
 
 public class AuthController : ApiControllerBase
 {
-    [HttpPost]
-    public void 
+
 }
-
-
