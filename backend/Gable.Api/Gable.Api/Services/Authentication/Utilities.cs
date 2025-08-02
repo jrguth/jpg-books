@@ -12,7 +12,7 @@ public static class Utilities
             new Claim("email", user.Email),
             new Claim("name", user.Name ?? ""),
             new Claim("userId", user.Id.ToString()),
-            new Claim("userName", user.UserName ?? ""),
+            new Claim("userName", user.Username ?? ""),
         };
     }
 }

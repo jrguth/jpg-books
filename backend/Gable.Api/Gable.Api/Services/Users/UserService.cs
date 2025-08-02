@@ -21,14 +21,14 @@ public class UserService
     {
         // Check if the username exists
         User? existingUser = await _gableDb.Users
-            .FirstOrDefaultAsync(u => u.UserName == userModel.Username || u.Email == userModel.Email);
+            .FirstOrDefaultAsync(u => u.Username == userModel.Username || u.Email == userModel.Email);
 
         if (existingUser != null) return null;
 
         // Construct User Entity
         var user = new User
         {
-            UserName = userModel.Username,
+            Username = userModel.Username,
             Email = userModel.Email,
             Name = userModel.Name,
             // Hash the password
@@ -47,7 +47,7 @@ public class UserService
     {
         // Try to find user
         User? user = await _gableDb.Users
-            .FirstOrDefaultAsync(u => u.Email == loginDTO.EmailOrUsername || u.UserName == loginDTO.EmailOrUsername);
+            .FirstOrDefaultAsync(u => u.Email == loginDTO.EmailOrUsername || u.Username == loginDTO.EmailOrUsername);
 
         if (null == user) throw new UserDoesNotExistException();
 
