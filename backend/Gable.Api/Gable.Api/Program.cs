@@ -12,10 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// builder.Services.AddAuthentication();
-// builder.Services.AddAuthorization();
-
 IConfiguration config = builder.Configuration;
 IServiceCollection services = builder.Services;
 
