@@ -1,8 +1,6 @@
-using System;
 using Gable.Api.Db;
 using Gable.Api.Db.Models;
 using Gable.Api.Services.Users;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gable.Api.Services;
@@ -10,11 +8,9 @@ namespace Gable.Api.Services;
 public class UserService
 {
     private GableDb _gableDb;
-    private PasswordHasher<User> passwordHasher;
     public UserService(GableDb gableDb)
     {
         _gableDb = gableDb;
-        passwordHasher = new PasswordHasher<User>();
     }
 
     public async Task<User?> CreateUser(CreateUserDTO userModel)
@@ -51,7 +47,7 @@ public class UserService
 
         if (null == user) throw new UserDoesNotExistException();
 
-        if (user.PasswordHash != BCrypt.Net.BCrypt.HashPassword(loginDTO.Password)) throw new InvalidPasswordException();
+        if(!BCrypt.Net.BCrypt.Verify(loginDTO.Password, user.PasswordHash)) throw new InvalidPasswordException();
 
         return user;
     }
