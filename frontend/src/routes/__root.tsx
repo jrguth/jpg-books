@@ -12,15 +12,17 @@ import { useState } from "react";
 import { api } from "../../convex/_generated/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "sonner";
+import { LibraryBig } from "lucide-react";
+import StickyNavbar from "@/components/sticky-navbar";
 
 export const Route = createRootRoute({
   component: () => (
     <div className="bg-background text-foreground font-sans min-h-dvh w-dvw">
-      <header className="sticky top-0 z-10 p-4 border-b-2 bg-background inline-flex w-full justify-between">
-        Books Books Books!
-        <SignOutButton />
+      <header>
+        <StickyNavbar />
       </header>
-      <main className="p-8 flex flex-col gap-16">
+      <main className="mt-10 p-8 flex flex-col gap-16">
         <h1 className="text-4xl font-bold text-center">Books Books Books!</h1>
         <Authenticated>
           <Outlet />
@@ -29,6 +31,7 @@ export const Route = createRootRoute({
           <SignInForm />
         </Unauthenticated>
       </main>
+      <Toaster />
     </div>
   ),
 });

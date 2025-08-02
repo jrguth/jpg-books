@@ -4,11 +4,13 @@ import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
 import "./index.css";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+const queryClient = new QueryClient();
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -27,7 +29,9 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <ConvexAuthProvider client={convex}>
-        <RouterProvider router={router} />
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       </ConvexAuthProvider>
     </StrictMode>,
   );
