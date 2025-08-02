@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gable.Api.Migrations
 {
     [DbContext(typeof(GableDb))]
-    [Migration("20250802231948_GoogleBookMetadataColumn")]
-    partial class GoogleBookMetadataColumn
+    [Migration("20250802233500_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

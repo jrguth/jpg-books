@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Gable.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,7 +55,8 @@ namespace Gable.Api.Migrations
                     Title = table.Column<string>(type: "TEXT", nullable: false),
                     PublishDate = table.Column<string>(type: "TEXT", nullable: true),
                     Subtitle = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true)
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    GoogleMetadata = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
