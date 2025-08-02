@@ -5,5 +5,6 @@ using System.Collections.Generic;
 
 public class GableDb : DbContext
 {
+    public GableDb(DbContextOptions<GableDb> options) : base(options) { }
     
 }
