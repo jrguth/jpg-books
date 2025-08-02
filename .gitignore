@@ -438,3 +438,5 @@ backend/Gable.Api/Gable.Api/gable.db-shm
 backend/Gable.Api/Gable.Api/appsettings.Development.json
 
 **/appsettings*.json
+*.json
+backend/Gable.Api/Gable.Api/appsettings.Development.json
