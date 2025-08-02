@@ -428,3 +428,5 @@ FodyWeavers.xsd
 
 *.DS_STORE
 .DS_Store
+
+**/gable.db
