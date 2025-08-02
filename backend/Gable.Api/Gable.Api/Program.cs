@@ -1,6 +1,7 @@
 using System.Text;
 using Gable.Api;
 using Gable.Api.Db;
+using Gable.Api.Services;
 using Gable.Api.Services.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,7 @@ services
 
 services.AddControllers();
 services.AddSingleton<JwtService>();
+services.AddTransient<UserService>();
 var app = builder.Build();
 
 app
