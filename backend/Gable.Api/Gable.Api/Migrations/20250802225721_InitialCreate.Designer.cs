@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gable.Api.Migrations
 {
     [DbContext(typeof(GableDb))]
-    [Migration("20250802201513_InitialCreate")]
+    [Migration("20250802225721_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -102,7 +102,7 @@ namespace Gable.Api.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("UserName")
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
