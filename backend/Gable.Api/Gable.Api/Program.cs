@@ -1,6 +1,7 @@
 using System.Text;
 using Gable.Api;
 using Gable.Api.Db;
+using Gable.Api.Services.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,21 @@ IServiceCollection services = builder.Services;
 services.AddOptions()
     .Configure<JwtConfig>(config.GetSection("Jwt"));
 
-services.AddAuthentication()
+services
+    .AddAuthorization()
+    .AddCors(opts =>
+    {
+        opts.AddDefaultPolicy(p =>
+        {
+            p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        });
+    })
+    .AddAuthentication(opts =>
+    {
+        opts.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        opts.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(opts =>
     {
         opts.SaveToken = true;
@@ -38,7 +53,13 @@ services.AddAuthentication()
                     Encoding.UTF8.GetBytes(config["Jwt:Key"] ?? throw new Exception("Missing Jwt:Key in config")))
         };
     });
+
+services.AddSingleton<JwtService>();
 var app = builder.Build();
+
+app
+    .UseAuthentication()
+    .UseAuthorization();
 
 app.UseHttpsRedirection();
 
