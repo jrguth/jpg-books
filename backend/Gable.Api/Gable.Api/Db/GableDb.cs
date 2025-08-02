@@ -24,13 +24,16 @@ public class GableDb : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<UserBookRelationship>()
-        .HasKey(oi => new { oi.UserId, oi.BookId });
+            .HasKey(oi => new { oi.UserId, oi.BookId });
 
         modelBuilder.Entity<BookGenreRelationship>()
-        .HasKey(oi => new { oi.GenreId, oi.BookId });
+            .HasKey(oi => new { oi.GenreId, oi.BookId });
 
         modelBuilder.Entity<BookAuthorRelationship>()
-        .HasKey(oi => new { oi.AuthorId, oi.BookId });
+            .HasKey(oi => new { oi.AuthorId, oi.BookId });
+
+        modelBuilder.Entity<Book>()
+            .HasIndex(b => b.GoogleId).IsUnique();
     }
     
 }

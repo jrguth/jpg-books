@@ -6,6 +6,8 @@ public class Book
 {
     [Key]
     public Guid Id { get; init; }
+    
+    public string GoogleId { get; init; }
     [Required]
     public string Title { get; init; }
 
