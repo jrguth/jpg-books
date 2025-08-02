@@ -14,4 +14,6 @@ public class Book
     public string? Subtitle { get; init; }
 
     public string? Description { get; init; }
+
+    public string GoogleMetadata { get; init; } = "";
 }
