@@ -47,8 +47,8 @@ public class AuthController : ApiControllerBase
         {
             return BadRequest(ex.Message);
         }
-        
-        return Ok(_jwtService.GenerateToken(user))
+
+        return Ok(_jwtService.GenerateToken(user.GetUserClaims()));
     }
 
 
