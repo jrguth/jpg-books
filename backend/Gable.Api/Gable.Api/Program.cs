@@ -3,6 +3,7 @@ using Gable.Api;
 using Gable.Api.Db;
 using Gable.Api.Services;
 using Gable.Api.Services.Authentication;
+using Gable.Api.Services.Books;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -49,8 +50,11 @@ services
     });
 
 services.AddControllers();
-services.AddSingleton<JwtService>();
-services.AddTransient<UserService>();
+services
+    .AddSingleton<JwtService>()
+    .AddTransient<UserService>()
+    .AddTransient<BookService>();
+
 var app = builder.Build();
 
 app
