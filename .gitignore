@@ -15,8 +15,9 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-*.idea
-**./*.DS_Store
+.idea
+*.DS_Store
+*.DS_STORE
 *.suo
 *.ntvs*
 *.njsproj
@@ -426,3 +427,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 *.DS_STORE
+.DS_Store
