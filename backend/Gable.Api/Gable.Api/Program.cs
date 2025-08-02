@@ -2,19 +2,16 @@ using System.Text;
 using Gable.Api;
 using Gable.Api.Db;
 using Gable.Api.Services.Authentication;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Abstractions;
-using Microsoft.Identity.Web.Resource;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-
-IConfiguration config = builder.Configuration;
 IServiceCollection services = builder.Services;
 
+services.AddDbContext<GableDb>(opt => opt.UseSqlite("Data source=gable.db"));
+
+IConfiguration config = builder.Configuration;
 services.AddOptions()
     .Configure<JwtConfig>(config.GetSection("Jwt"));
 
