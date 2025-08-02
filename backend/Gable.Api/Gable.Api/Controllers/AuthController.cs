@@ -43,7 +43,7 @@ public class AuthController : ApiControllerBase
             user = await _userService.ValidateLogin(loginDTO);
 
         }
-        catch (Exception ex) when (ex is InvalidPasswordException || ex is UserDoesNotExistException)
+        catch (Exception ex) when (ex is InvalidPasswordException or UserDoesNotExistException)
         {
             return BadRequest(ex.Message);
         }
