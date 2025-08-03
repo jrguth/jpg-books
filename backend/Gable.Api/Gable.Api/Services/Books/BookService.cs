@@ -18,14 +18,14 @@ public class BookService
 
     public async Task<List<Book>> GetUserBooks(Guid userId)
     {
-        return await _db.UserBookRelationships
+        return await _db.Users
             .AsNoTracking()
-            .Where(ub => ub.UserId == userId)
-            .Include(ub => ub.Book.BookAuthors)
-                .ThenInclude(ba => ba.Author)
-            .Include(ub => ub.Book.BookGenres)
-                .ThenInclude(bg => bg.Genre)
-            .Select(ub => ub.Book)
+            .Where(u => u.Id == userId)
+            .Include(u => u.Books)
+                .ThenInclude(b => b.Genres)
+            .Include(u => u.Books)
+                .ThenInclude(b => b.Authors)
+            .SelectMany(u => u.Books)
             .ToListAsync();
     }
 
