@@ -11,4 +11,5 @@ public class UserBookRelationship
     public Book? Book { get; init; }
     
     public User? User { get; init; }
+    
 }

@@ -1,5 +1,6 @@
 
 using System.ComponentModel.DataAnnotations;
+using Gable.Api.Db.Models;
 
 public class Author
 {
@@ -9,6 +10,5 @@ public class Author
     [Required]
     public string Name { get; init; }
 
-    public ICollection<BookAuthorRelationship> BookAuthorRelationships { get; init; }
-
+    public List<Book> Books { get; init; } = new();
 }

@@ -31,7 +31,13 @@ export const bookSchema = z
         .default({ smallThumbnail: imageBackup, thumbnail: imageBackup }),
     }),
   })
-  .transform((arg) => ({ ...arg, ...arg.volumeInfo }));
+  .transform((arg) => {
+    const { volumeInfo, ...rest } = arg;
+    return {
+      ...rest,
+      ...volumeInfo,
+    };
+  });
 
 export const searchBooks = async (query: string): Promise<Array<Book>> => {
   const {

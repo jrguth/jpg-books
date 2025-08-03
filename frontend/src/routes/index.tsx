@@ -1,21 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useBoolean, useDebounceValue } from "usehooks-ts";
+import { useDebounceValue } from "usehooks-ts";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { searchBooks } from "@/lib/gapi";
-import { getBook } from "@/lib/gapi";
+import { useEffect } from "react";
 import { CenteredSpinner } from "@/components/spinner";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+
 import { useBookSearch } from "@/hooks/gapi";
 import { toast } from "sonner";
 import { BookCard } from "@/components/book-card";
@@ -34,6 +22,8 @@ function Index() {
       toast.error("Something went wrong there!", { position: "top-center" });
     }
   }, [error]);
+
+  if (books) console.log(JSON.stringify(books[0]));
 
   return (
     <div className="container mx-auto space-y-4">

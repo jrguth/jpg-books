@@ -33,7 +33,27 @@ public class GableDb : DbContext
             .HasKey(oi => new { oi.AuthorId, oi.BookId });
 
         modelBuilder.Entity<Book>()
-            .HasIndex(b => b.GoogleId).IsUnique();
+            .HasMany(b => b.Users)
+            .WithMany(u => u.Books)
+            .UsingEntity<UserBookRelationship>();
+        
+        modelBuilder.Entity<Book>()
+            .HasMany(b => b.Authors)
+            .WithMany(a => a.Books)
+            .UsingEntity<BookAuthorRelationship>();
+        
+        modelBuilder.Entity<Book>()
+            .HasMany(b => b.Genres)
+            .WithMany(a => a.Books)
+            .UsingEntity<BookGenreRelationship>();
+        
+        modelBuilder.Entity<Book>()
+            .HasIndex(b => b.GoogleId)
+            .IsUnique();
+
+        modelBuilder.Entity<Genre>()
+            .HasIndex(g => g.GenreName)
+            .IsUnique();
     }
     
 }

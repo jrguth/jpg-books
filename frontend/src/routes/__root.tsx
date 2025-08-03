@@ -34,13 +34,14 @@ const RootComponent = () => {
         <h1 className="text-4xl leading-none font-bold text-center">
           Books Books Books!
         </h1>
-        {user ? (
+        <Outlet />
+        {/* {user ? (
           <Outlet />
         ) : flow == "login" ? (
           <LoginForm setFlow={setFlow} />
         ) : (
           <RegisterForm setFlow={setFlow} />
-        )}
+        )} */}
       </main>
       <Toaster />
     </div>

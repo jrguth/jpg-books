@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Gable.Api.Db.Models;
 
 public class Genre
 {
@@ -7,6 +8,6 @@ public class Genre
     [Required]
     public string GenreName { get; init; }
 
-    public ICollection<BookGenreRelationship> GenreBooks { get; init; }
+    public List<Book> Books { get; init; } = new();
 
 }
