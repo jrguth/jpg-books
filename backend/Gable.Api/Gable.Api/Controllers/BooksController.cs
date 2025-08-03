@@ -12,6 +12,13 @@ public class BooksController : ApiControllerBase
         _bookService = bookService;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetBooks()
+    {
+        var books = await _bookService.GetUserBooks(HttpContext.GetUserId());
+        return Ok(books);
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteBook(Guid id)
     {
