@@ -41,7 +41,7 @@ public class BookService
     {
         // Check if book already exists in the books table, if not write it out
         Book book = await _db.Books
-            .Include(b => b.UserBooks.Where(ub => ub.UserId == userId))
+            .Include(b => b.Users.Where(ub => ub.Id == userId))
             .FirstOrDefaultAsync(b => b.GoogleId == addBook.GoogleId);
 
         // If the book doesn't exist, create a new one
@@ -55,9 +55,9 @@ public class BookService
                 Subtitle = addBook.Subtitle,
                 Description = addBook.Description,
                 GoogleMetadata = addBook.GoogleMetadata,
-                UserBooks = new List<UserBookRelationship>
+                Users = new List<User>
                 {
-                    new (){ UserId = userId }
+                    new (){ Id = userId }
                 }
             };
 
@@ -81,7 +81,7 @@ public class BookService
         }
 
         // Check if book already exists on the user (check relationship table)
-        else if (!book.UserBooks.Any())
+        else if (!book.Users.Any())
         {
             _db.UserBookRelationships.Add(new UserBookRelationship
             {
@@ -106,18 +106,14 @@ public class BookService
             genre = new Genre
             {
                 GenreName = genreName,
-                GenreBooks = new List<BookGenreRelationship>
-                {
-                    new (){ BookId = book.Id }
-                }
-
+                Books = new List<Book>{ book }
             };
 
             _db.Genres.Add(genre);
         }
 
         // Check that the relation already exists
-        if (!genre.GenreBooks.Any(ub => ub.BookId == book.Id))
+        if (!genre.Books.Any(ub => ub.Id == book.Id))
         {
             _db.BookGenreRelationships.Add(new BookGenreRelationship
             {
@@ -137,10 +133,7 @@ public class BookService
             author = new Author
             {
                 Name = authorName,
-                BookAuthorRelationships = new List<BookAuthorRelationship>
-                {
-                    new (){ BookId = book.Id }
-                }
+                Books = new List<Book> { book }
 
             };
 
@@ -148,7 +141,7 @@ public class BookService
         }
 
         // Check that the relation already exists
-        if (!author.BookAuthorRelationships.Any(ub => ub.BookId == book.Id))
+        if (!author.Books.Any(ub => ub.Id == book.Id))
         {
             _db.BookAuthorRelationships.Add(new BookAuthorRelationship
             {
