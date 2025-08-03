@@ -16,13 +16,20 @@ const defaultErrorHandler = (error: Error) => {
 };
 
 export const useRegister = () => {
+  const { setUser } = useAuth();
   return useMutation({
     mutationKey: ["gable-api", "register"],
     mutationFn: (registration: {
       emailOrUsername: string;
       password: string;
       name: string | null;
-    }) => GableApi.post("/auth/register", registration),
+    }) => GableApi.post<{ value: string }>("/auth/register", registration),
+    onSuccess: ({ data }) => {
+      localStorage.setItem("jwt", data.value);
+      const claims = decodeJwtClaims(data.value);
+      console.log(claims);
+      setUser(claims);
+    },
     onError: defaultErrorHandler,
   });
 };
