@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using Gable.Api;
 using Gable.Api.Db;
 using Gable.Api.Services;
@@ -49,7 +50,8 @@ services
         };
     });
 
-services.AddControllers();
+services.AddControllers()
+    .AddJsonOptions(opts => opts.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 services
     .AddSingleton<JwtService>()
     .AddTransient<UserService>()

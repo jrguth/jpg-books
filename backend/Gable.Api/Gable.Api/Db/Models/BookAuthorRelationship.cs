@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Gable.Api.Db.Models;
 
 public class BookAuthorRelationship
 {
@@ -10,4 +11,6 @@ public class BookAuthorRelationship
     public Guid AuthorId { get; init; }
     
     public Author? Author { get; init; }
+    
+    public Book? Book { get; init; }
 }

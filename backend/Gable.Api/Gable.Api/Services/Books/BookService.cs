@@ -39,8 +39,9 @@ public class BookService
 
     public async Task<Book> AddBook(AddBookRequestDTO addBook, Guid userId)
     {
+        Console.WriteLine(userId);
         // Check if book already exists in the books table, if not write it out
-        Book book = await _db.Books
+        Book? book = await _db.Books
             .Include(b => b.Users.Where(ub => ub.Id == userId))
             .FirstOrDefaultAsync(b => b.GoogleId == addBook.GoogleId);
 
@@ -55,18 +56,13 @@ public class BookService
                 Subtitle = addBook.Subtitle,
                 Description = addBook.Description,
                 GoogleMetadata = addBook.GoogleMetadata,
-                Users = new List<User>
-                {
-                    new (){ Id = userId }
-                }
+                Users = [_db.Users.First(u => u.Id == userId)],
             };
-
-            _db.Books.Add(book);
-
+            
             // Grab the genres off of the book object
-            var result = JsonSerializer.Deserialize<GoogleVolume>(book.GoogleMetadata);
+            var googleVolume = JsonSerializer.Deserialize<GoogleVolume>(book.GoogleMetadata, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            foreach (var category in result?.Categories ?? [])
+            foreach (var category in googleVolume?.Categories ?? [])
             {
                 // check that the genre exists in the table
                 // If not, add it and a new relation
@@ -74,23 +70,15 @@ public class BookService
             }
 
             // Check Author table
-            foreach (var author in result?.Authors ?? [])
+            foreach (var author in googleVolume?.Authors ?? [])
             {
                 CheckAuthorAndBook(author, book);
             }
+
+            _db.Books.Add(book);
         }
 
-        // Check if book already exists on the user (check relationship table)
-        else if (!book.Users.Any())
-        {
-            _db.UserBookRelationships.Add(new UserBookRelationship
-            {
-                UserId = userId,
-                BookId = book.Id
-            });
-        }
-
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
 
         // Return the book object
         return book;
@@ -99,56 +87,13 @@ public class BookService
     private void CheckGenreAndBook(string genreName, Book book)
     {
         Genre? genre = _db.Genres.FirstOrDefault(g => g.GenreName == genreName);
-
-        // If the genre is not in the table, add it
-        if (null == genre)
-        {
-            genre = new Genre
-            {
-                GenreName = genreName,
-                Books = new List<Book>{ book }
-            };
-
-            _db.Genres.Add(genre);
-        }
-
-        // Check that the relation already exists
-        if (!genre.Books.Any(ub => ub.Id == book.Id))
-        {
-            _db.BookGenreRelationships.Add(new BookGenreRelationship
-            {
-                GenreId = genre.Id,
-                BookId = book.Id
-            });
-        }
+        book.Genres.Add(genre ?? new Genre { GenreName = genreName });
     }
 
     private void CheckAuthorAndBook(string authorName, Book book)
     {
         Author? author = _db.Authors.FirstOrDefault(a => a.Name == authorName);
-
-        // If the author is not in the table, add it
-        if (null == author)
-        {
-            author = new Author
-            {
-                Name = authorName,
-                Books = new List<Book> { book }
-
-            };
-
-            _db.Authors.Add(author);
-        }
-
-        // Check that the relation already exists
-        if (!author.Books.Any(ub => ub.Id == book.Id))
-        {
-            _db.BookAuthorRelationships.Add(new BookAuthorRelationship
-            {
-                AuthorId = author.Id,
-                BookId = book.Id
-            });
-        }
+        book.Authors.Add(author ??  new Author { Name = authorName });
     }
 
     private class GoogleVolume

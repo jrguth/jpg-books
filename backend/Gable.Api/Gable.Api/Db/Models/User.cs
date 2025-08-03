@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Gable.Api.Db.Models;
 
@@ -16,5 +17,6 @@ public class User
 
     public List<Book> Books { get; init; } = new();
 
+    [JsonIgnore]
     public List<UserBookRelationship> UserBooks { get; init; } = new();
 }

@@ -27,9 +27,9 @@ public class BooksController : ApiControllerBase
         return Ok();
     }
     [HttpPost("add")]
-    public async Task<IActionResult> AddBook(AddBookRequestDTO addBook, Guid userId)
+    public async Task<IActionResult> AddBook(AddBookRequestDTO addBook)
     {
-        Book result = await _bookService.AddBook(addBook, userId);
+        Book result = await _bookService.AddBook(addBook, HttpContext.GetUserId());
 
         return Ok(result);
     }

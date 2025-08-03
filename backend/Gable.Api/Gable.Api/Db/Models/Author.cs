@@ -1,16 +1,18 @@
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Gable.Api.Db.Models;
 
 public class Author
 {
     [Key]
-    public Guid Id { get; init; }
+    public Guid Id { get; set; }
 
     [Required]
-    public string Name { get; init; }
+    public string Name { get; set; }
 
-    public List<Book> Books { get; init; } = new();
+    public List<Book> Books { get; set; } = new();
 
-    public List<BookAuthorRelationship> BookAuthors { get; init; } = new();
+    [JsonIgnore]
+    public List<BookAuthorRelationship> BookAuthors { get; set; } = new();
 }
