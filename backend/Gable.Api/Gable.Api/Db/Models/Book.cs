@@ -19,6 +19,6 @@ public class Book
 
     public string GoogleMetadata { get; init; } = "";
     
-    public ICollection<BookGenreRelationship> BookGenres { get; init; }
-    public ICollection<BookAuthorRelationship> BookAuthors { get; init; }
+    public ICollection<BookGenreRelationship> BookGenres { get; init; } =  new List<BookGenreRelationship>();
+    public ICollection<BookAuthorRelationship> BookAuthors { get; init; } = new List<BookAuthorRelationship>();
 }
