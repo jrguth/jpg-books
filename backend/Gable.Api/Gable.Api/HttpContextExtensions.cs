@@ -13,10 +13,10 @@ public static class HttpContextExtensions
         return token!.Replace("Bearer ", string.Empty);
     }
 
-    public static string GetUserId(this HttpContext context)
+    public static Guid GetUserId(this HttpContext context)
     {
         var userId = context.GetClaim("userId");
         if (string.IsNullOrEmpty(userId)) throw new Exception("Missing use");
-        return userId;
+        return Guid.Parse(userId);
     }
 }
