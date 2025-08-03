@@ -7,8 +7,7 @@ public class CreateUserDTO
 {
     [Required]
     public string Email { init; get; }
-
-    [Required]
+    
     public string Username { init; get; }
 
     [Required]

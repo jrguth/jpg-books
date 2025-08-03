@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using Gable.Api.Db;
 using Gable.Api.Db.Models;
 using Gable.Api.Services.Users;
@@ -20,7 +21,7 @@ public class UserService
             .FirstOrDefaultAsync(u => u.Username == userModel.Username || u.Email == userModel.Email);
 
         if (existingUser != null) return null;
-
+        
         // Construct User Entity
         var user = new User
         {

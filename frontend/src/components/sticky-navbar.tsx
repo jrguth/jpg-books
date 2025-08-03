@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useConvexAuth } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { useAuth } from "@/hooks/auth";
 
 export default function StickyNavbar() {
   const [isVisible, setIsVisible] = useState(true);
@@ -114,12 +115,18 @@ export default function StickyNavbar() {
 }
 
 function SignOutButton() {
-  const { isAuthenticated } = useConvexAuth();
-  const { signOut } = useAuthActions();
+  const { user, setUser } = useAuth();
   return (
     <>
-      {isAuthenticated && (
-        <Button size="sm" variant="outline" onClick={() => void signOut()}>
+      {user && (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            localStorage.clear();
+            setUser(null);
+          }}
+        >
           Sign out
         </Button>
       )}

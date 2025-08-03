@@ -93,8 +93,11 @@ export function LoginForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
                 <form.Field name="emailOrUsername">
                   {(field) => (
                     <>
-                      <Label htmlFor="email" className="inline-flex gap-1">
-                        Email
+                      <Label
+                        htmlFor="emailOrUsername"
+                        className="inline-flex gap-1"
+                      >
+                        Email or username
                         {field.state.meta.errors.length > 0 && (
                           <em className="text-xs text-rose-700">
                             {field.state.meta.errors
@@ -109,7 +112,7 @@ export function LoginForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
                         value={field.state.value}
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
-                        placeholder={"@username or email"}
+                        placeholder={"Email or @username"}
                         className={
                           field.state.meta.errors.length > 0
                             ? "ring-rose-700 ring-2"
@@ -179,9 +182,10 @@ export function LoginForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
 }
 
 const RegisterSchema = z.object({
-  emailOrUsername: z.string().min(1, "Required"),
+  email: z.string().min(1, "Required"),
   password: z.string().min(1, "Required"),
-  confirmPassword: z.string().min(1),
+  confirmPassword: z.string(),
+  username: z.string(),
   name: z.string(),
 });
 
@@ -189,7 +193,8 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
   const { mutate: register, isPending } = useRegister();
   const form = useForm({
     defaultValues: {
-      emailOrUsername: "",
+      email: "",
+      username: "",
       name: "",
       password: "",
       confirmPassword: "",
@@ -199,7 +204,11 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
       onSubmit: RegisterSchema,
     },
     onSubmit: ({ value }) => {
-      register(value);
+      register(value, {
+        onSettled: (data, error) => {
+          if (!error) setFlow("login");
+        },
+      });
     },
   });
   return (
@@ -221,14 +230,11 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
           >
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <form.Field name="emailOrUsername">
+                <form.Field name="email">
                   {(field) => (
                     <>
-                      <Label
-                        htmlFor="emailOrUsername"
-                        className="inline-flex gap-1"
-                      >
-                        Email or username
+                      <Label htmlFor="email" className="inline-flex gap-1">
+                        Email
                         {field.state.meta.errors.length > 0 && (
                           <em className="text-xs text-rose-700">
                             {field.state.meta.errors
@@ -249,6 +255,32 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
                             ? "ring-rose-700 ring-2"
                             : ""
                         }
+                        type="email"
+                      />
+                    </>
+                  )}
+                </form.Field>
+              </div>
+              <div className="grid gap-3">
+                <form.Field name="username">
+                  {(field) => (
+                    <>
+                      <Label htmlFor="username" className="inline-flex gap-1">
+                        Username
+                        <span className="text-xs font-light">(optional)</span>
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        placeholder={"@booknerd"}
+                        className={
+                          field.state.meta.errors.length > 0
+                            ? "ring-rose-700 ring-2"
+                            : ""
+                        }
                       />
                     </>
                   )}
@@ -264,6 +296,54 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
                           <em className="text-xs text-rose-700">
                             {field.state.meta.errors
                               .map((e) => e?.message)
+                              .join(", ")}
+                          </em>
+                        )}
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className={
+                          field.state.meta.errors.length > 0
+                            ? "ring-rose-700 ring-2"
+                            : ""
+                        }
+                        type="password"
+                      />
+                    </>
+                  )}
+                </form.Field>
+              </div>
+              <div className="grid gap-3">
+                <form.Field
+                  name="confirmPassword"
+                  validators={{
+                    onChangeListenTo: ["password"],
+                    onBlurListenTo: ["password"],
+                    onChange: ({ value, fieldApi }) => {
+                      if (value !== fieldApi.form.getFieldValue("password")) {
+                        return "Passwords do not match";
+                      }
+                      return undefined;
+                    },
+                  }}
+                >
+                  {(field) => (
+                    <>
+                      <Label
+                        htmlFor="confirmPassword"
+                        className="inline-flex gap-1"
+                      >
+                        Confirm password
+                        {field.state.meta.errors.length > 0 && (
+                          <em className="text-xs text-rose-700">
+                            {field.state.meta.errors
+                              .map((e) =>
+                                typeof e == "string" ? e : e?.message,
+                              )
                               .join(", ")}
                           </em>
                         )}
@@ -311,7 +391,7 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
                   className="w-full"
                   isLoading={isPending}
                 >
-                  Login
+                  Register
                 </LoadingButton>
               </div>
             </div>

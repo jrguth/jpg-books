@@ -8,7 +8,9 @@ const defaultErrorHandler = (error: Error) => {
   console.error(error);
   if (axios.isAxiosError(error)) {
     if (error.status === 400) {
-      toast.error(error.message);
+      toast.error(error.response?.data ?? error.message, {
+        position: "top-center",
+      });
     } else {
       toast.error("Something went wrong there", { position: "top-center" });
     }
@@ -20,14 +22,14 @@ export const useRegister = () => {
   return useMutation({
     mutationKey: ["gable-api", "register"],
     mutationFn: (registration: {
-      emailOrUsername: string;
+      email: string;
+      username: string;
       password: string;
       name: string | null;
     }) => GableApi.post<{ value: string }>("/auth/register", registration),
     onSuccess: ({ data }) => {
       localStorage.setItem("jwt", data.value);
       const claims = decodeJwtClaims(data.value);
-      console.log(claims);
       setUser(claims);
     },
     onError: defaultErrorHandler,
@@ -43,14 +45,13 @@ export const useLogin = () => {
     onSuccess: ({ data }) => {
       localStorage.setItem("jwt", data.value);
       const claims = decodeJwtClaims(data.value);
-      console.log(claims);
       setUser(claims);
     },
     onError: defaultErrorHandler,
   });
 };
 
-function decodeJwtClaims(token: string) {
+export function decodeJwtClaims(token: string) {
   // Split the JWT into its three parts
   const parts = token.split(".");
 
