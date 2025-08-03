@@ -8,6 +8,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
+import { AuthContext } from "./lib/auth-context";
+import { AuthProvider } from "./components/auth-provider";
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 const queryClient = new QueryClient();
@@ -30,7 +32,9 @@ if (!rootElement.innerHTML) {
     <StrictMode>
       <ConvexAuthProvider client={convex}>
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
         </QueryClientProvider>
       </ConvexAuthProvider>
     </StrictMode>,
