@@ -30,7 +30,7 @@ public class AuthController : ApiControllerBase
             return BadRequest("User already exists big dumb idiot");
         }
 
-        return Ok(result);
+        return Ok(_jwtService.GenerateToken(result.GetUserClaims()));
     }
 
     [HttpPost("login")]

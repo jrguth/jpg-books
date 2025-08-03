@@ -9,5 +9,6 @@ public class Author
     [Required]
     public string Name { get; init; }
 
-    
+    public ICollection<BookAuthorRelationship> BookAuthorRelationships { get; init; }
+
 }

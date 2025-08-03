@@ -7,4 +7,6 @@ public class Genre
     [Required]
     public string GenreName { get; init; }
 
+    public ICollection<BookGenreRelationship> GenreBooks { get; init; }
+
 }

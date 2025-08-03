@@ -6,7 +6,7 @@ public class Book
 {
     [Key]
     public Guid Id { get; init; }
-    
+
     public string GoogleId { get; init; }
     [Required]
     public string Title { get; init; }
@@ -21,4 +21,5 @@ public class Book
     
     public ICollection<BookGenreRelationship> BookGenres { get; init; } =  new List<BookGenreRelationship>();
     public ICollection<BookAuthorRelationship> BookAuthors { get; init; } = new List<BookAuthorRelationship>();
+    public ICollection<UserBookRelationship> UserBooks { get; init; }
 }
