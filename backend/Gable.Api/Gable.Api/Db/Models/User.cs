@@ -13,6 +13,8 @@ public class User
     public string PasswordHash { get; init; }
 
     public string? Name { get; init; }
-    
+
     public List<Book> Books { get; init; } = new();
+
+    public List<UserBookRelationship> UserBooks { get; init; } = new();
 }

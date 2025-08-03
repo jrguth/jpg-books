@@ -10,4 +10,6 @@ public class Genre
 
     public List<Book> Books { get; init; } = new();
 
+    public List<BookGenreRelationship> BookGenres { get; init; } = new();
+
 }

@@ -22,4 +22,10 @@ public class Book
     public List<User> Users { get; init; } = new();
     public List<Genre> Genres { get; init; } = new();
     public List<Author> Authors { get; init; } = new();
+
+    public List<BookAuthorRelationship> BookAuthors { get; init; } = new();
+
+    public List<BookGenreRelationship> BookGenres { get; init; } = new();
+
+    public List<UserBookRelationship> UserBooks { get; init; } = new();
 }

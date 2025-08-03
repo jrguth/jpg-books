@@ -11,4 +11,6 @@ public class Author
     public string Name { get; init; }
 
     public List<Book> Books { get; init; } = new();
+
+    public List<BookAuthorRelationship> BookAuthors { get; init; } = new();
 }
