@@ -23,29 +23,23 @@ public class GableDb : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<UserBookRelationship>()
-            .HasKey(oi => new { oi.UserId, oi.BookId });
-
-        modelBuilder.Entity<BookGenreRelationship>()
-            .HasKey(oi => new { oi.GenreId, oi.BookId });
-
-        modelBuilder.Entity<BookAuthorRelationship>()
-            .HasKey(oi => new { oi.AuthorId, oi.BookId });
-
         modelBuilder.Entity<Book>()
             .HasMany(b => b.Users)
             .WithMany(u => u.Books)
-            .UsingEntity<UserBookRelationship>();
+            .UsingEntity<UserBookRelationship>()
+            .HasKey(ub => new { ub.UserId, ub.BookId });
         
         modelBuilder.Entity<Book>()
             .HasMany(b => b.Authors)
             .WithMany(a => a.Books)
-            .UsingEntity<BookAuthorRelationship>();
+            .UsingEntity<BookAuthorRelationship>()
+            .HasKey(ub => new { ub.AuthorId, ub.BookId });
         
         modelBuilder.Entity<Book>()
             .HasMany(b => b.Genres)
             .WithMany(a => a.Books)
-            .UsingEntity<BookGenreRelationship>();
+            .UsingEntity<BookGenreRelationship>()
+            .HasKey(ub => new { ub.GenreId, ub.BookId });
         
         modelBuilder.Entity<Book>()
             .HasIndex(b => b.GoogleId)
