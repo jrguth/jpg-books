@@ -9,6 +9,8 @@ const defaultErrorHandler = (error: Error) => {
   if (axios.isAxiosError(error)) {
     if (error.status === 400) {
       toast.error(error.message);
+    } else {
+      toast.error("Something went wrong there", { position: "top-center" });
     }
   }
 };

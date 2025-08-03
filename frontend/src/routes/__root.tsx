@@ -16,9 +16,15 @@ import { Label } from "@/components/ui/label";
 import { useLogin, useRegister } from "@/hooks/gable-api";
 
 import { useForm } from "@tanstack/react-form";
+import z from "zod";
+import LoadingButton from "@/components/loading-button";
+import { useState } from "react";
+
+type Flow = "login" | "register";
 
 const RootComponent = () => {
   const { user } = useAuth();
+  const [flow, setFlow] = useState<Flow>("login");
   return (
     <div className="bg-background text-foreground font-sans min-h-dvh w-dvw">
       <header>
@@ -28,7 +34,13 @@ const RootComponent = () => {
         <h1 className="text-4xl leading-none font-bold text-center">
           Books Books Books!
         </h1>
-        {user ? <Outlet /> : <SignInForm />}
+        {user ? (
+          <Outlet />
+        ) : flow == "login" ? (
+          <LoginForm setFlow={setFlow} />
+        ) : (
+          <RegisterForm setFlow={setFlow} />
+        )}
       </main>
       <Toaster />
     </div>
@@ -39,19 +51,28 @@ export const Route = createRootRoute({
   component: RootComponent,
 });
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+const LoginSchema = z.object({
+  emailOrUsername: z.string().min(1, "Required"),
+  password: z.string().min(1, "Required"),
+});
+
+export function LoginForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
   const { mutate: login, isPending } = useLogin();
   const form = useForm({
     defaultValues: {
       emailOrUsername: "",
       password: "",
     },
+    validators: {
+      onChange: LoginSchema,
+      onSubmit: LoginSchema,
+    },
+    onSubmit: ({ value }) => {
+      login(value);
+    },
   });
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className="container mx-auto flex flex-col gap-6 max-w-xl">
       <Card>
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -69,37 +90,240 @@ export function LoginForm({
           >
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="john.doe@example.com"
-                  required
-                />
+                <form.Field name="emailOrUsername">
+                  {(field) => (
+                    <>
+                      <Label htmlFor="email" className="inline-flex gap-1">
+                        Email
+                        {field.state.meta.errors.length > 0 && (
+                          <em className="text-xs text-rose-700">
+                            {field.state.meta.errors
+                              .map((e) => e?.message)
+                              .join(", ")}
+                          </em>
+                        )}
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        placeholder={"@username or email"}
+                        className={
+                          field.state.meta.errors.length > 0
+                            ? "ring-rose-700 ring-2"
+                            : ""
+                        }
+                      />
+                    </>
+                  )}
+                </form.Field>
               </div>
               <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
-                <Input id="password" type="password" required />
+                <form.Field name="password">
+                  {(field) => (
+                    <>
+                      <Label htmlFor="password" className="inline-flex gap-1">
+                        Password
+                        {field.state.meta.errors.length > 0 && (
+                          <em className="text-xs text-rose-700">
+                            {field.state.meta.errors
+                              .map((e) => e?.message)
+                              .join(", ")}
+                          </em>
+                        )}
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className={
+                          field.state.meta.errors.length > 0
+                            ? "ring-rose-700 ring-2"
+                            : ""
+                        }
+                        type="password"
+                      />
+                    </>
+                  )}
+                </form.Field>
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
+                <LoadingButton
+                  type="submit"
+                  className="w-full"
+                  isLoading={isPending}
+                >
                   Login
-                </Button>
+                </LoadingButton>
               </div>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
+              Don&apos;t have an account?
+              <Button
+                variant="link"
+                onClick={() => setFlow("register")}
+                className="hover:cursor-pointer px-1"
+              >
                 Sign up
-              </a>
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+const RegisterSchema = z.object({
+  emailOrUsername: z.string().min(1, "Required"),
+  password: z.string().min(1, "Required"),
+  confirmPassword: z.string().min(1),
+  name: z.string(),
+});
+
+function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
+  const { mutate: register, isPending } = useRegister();
+  const form = useForm({
+    defaultValues: {
+      emailOrUsername: "",
+      name: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validators: {
+      onChange: RegisterSchema,
+      onSubmit: RegisterSchema,
+    },
+    onSubmit: ({ value }) => {
+      register(value);
+    },
+  });
+  return (
+    <div className={cn("container mx-auto flex flex-col gap-6 max-w-xl")}>
+      <Card>
+        <CardHeader>
+          <CardTitle>Sign Up</CardTitle>
+          <CardDescription>
+            Enter the details below to get started
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              void form.handleSubmit();
+            }}
+          >
+            <div className="flex flex-col gap-6">
+              <div className="grid gap-3">
+                <form.Field name="emailOrUsername">
+                  {(field) => (
+                    <>
+                      <Label
+                        htmlFor="emailOrUsername"
+                        className="inline-flex gap-1"
+                      >
+                        Email or username
+                        {field.state.meta.errors.length > 0 && (
+                          <em className="text-xs text-rose-700">
+                            {field.state.meta.errors
+                              .map((e) => e?.message)
+                              .join(", ")}
+                          </em>
+                        )}
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        placeholder={"Email or @username"}
+                        className={
+                          field.state.meta.errors.length > 0
+                            ? "ring-rose-700 ring-2"
+                            : ""
+                        }
+                      />
+                    </>
+                  )}
+                </form.Field>
+              </div>
+              <div className="grid gap-3">
+                <form.Field name="password">
+                  {(field) => (
+                    <>
+                      <Label htmlFor="password" className="inline-flex gap-1">
+                        Password
+                        {field.state.meta.errors.length > 0 && (
+                          <em className="text-xs text-rose-700">
+                            {field.state.meta.errors
+                              .map((e) => e?.message)
+                              .join(", ")}
+                          </em>
+                        )}
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className={
+                          field.state.meta.errors.length > 0
+                            ? "ring-rose-700 ring-2"
+                            : ""
+                        }
+                        type="password"
+                      />
+                    </>
+                  )}
+                </form.Field>
+              </div>
+              <div className="grid gap-3">
+                <form.Field name="name">
+                  {(field) => (
+                    <>
+                      <Label htmlFor="name">
+                        Name <span className="font-light">(optional)</span>
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        type="text"
+                        placeholder="John Doe"
+                      />
+                    </>
+                  )}
+                </form.Field>
+              </div>
+              <div className="flex flex-col gap-3">
+                <LoadingButton
+                  type="submit"
+                  className="w-full"
+                  isLoading={isPending}
+                >
+                  Login
+                </LoadingButton>
+              </div>
+            </div>
+            <div className="mt-4 text-center text-sm">
+              Already have an account?{" "}
+              <Button
+                variant="link"
+                className="hover:cursor-pointer px-1"
+                onClick={() => setFlow("login")}
+              >
+                Log in
+              </Button>
             </div>
           </form>
         </CardContent>
