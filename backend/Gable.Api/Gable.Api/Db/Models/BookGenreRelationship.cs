@@ -7,4 +7,6 @@ public class BookGenreRelationship
 
     [Required]
     public Guid GenreId { get; init; }
+    
+    public Genre? Genre { get; init; }
 }

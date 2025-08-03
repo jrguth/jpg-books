@@ -19,7 +19,9 @@ public class BookService
             .AsNoTracking()
             .Where(ub => ub.UserId == userId)
             .Include(ub => ub.Book.BookAuthors)
+                .ThenInclude(ba => ba.Author)
             .Include(ub => ub.Book.BookGenres)
+                .ThenInclude(bg => bg.Genre)
             .Select(ub => ub.Book)
             .ToListAsync();
     }

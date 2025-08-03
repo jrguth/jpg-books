@@ -8,4 +8,6 @@ public class BookAuthorRelationship
 
     [Required]
     public Guid AuthorId { get; init; }
+    
+    public Author? Author { get; init; }
 }
