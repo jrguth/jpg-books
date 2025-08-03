@@ -1,3 +1,4 @@
+using Gable.Api.Db.Models;
 using Gable.Api.Services.Books;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,4 +26,12 @@ public class BooksController : ApiControllerBase
         await _bookService.DeleteBookById(id, HttpContext.GetUserId());
         return Ok();
     }
+    [HttpPost("add")]
+    public async Task<IActionResult> AddBook(AddBookRequestDTO addBook, Guid userId)
+    {
+        Book result = await _bookService.AddBook(addBook, userId);
+
+        return Ok(result);
+    }
+
 }
