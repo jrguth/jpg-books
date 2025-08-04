@@ -146,6 +146,7 @@ export function LoginForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
                             : ""
                         }
                         type="password"
+                        placeholder="password"
                       />
                     </>
                   )}
@@ -179,7 +180,7 @@ export function LoginForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
 }
 
 const RegisterSchema = z.object({
-  email: z.string().min(1, "Required"),
+  email: z.email(),
   password: z.string().min(1, "Required"),
   confirmPassword: z.string(),
   username: z.string(),
@@ -197,12 +198,14 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
       confirmPassword: "",
     },
     validators: {
-      onChange: RegisterSchema,
+      onChangeAsync: RegisterSchema,
+      onChangeAsyncDebounceMs: 1000,
       onSubmit: RegisterSchema,
     },
+
     onSubmit: ({ value }) => {
       register(value, {
-        onSettled: (data, error) => {
+        onSettled: (_, error) => {
           if (!error) setFlow("login");
         },
       });
@@ -224,7 +227,7 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
               e.stopPropagation();
               void form.handleSubmit();
             }}
-            autoComplete="off"
+            className="[&>*_input]:bg-background [&>*_input]:text-foreground"
           >
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
@@ -233,13 +236,14 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
                     <>
                       <Label htmlFor="email" className="inline-flex gap-1">
                         Email
-                        {field.state.meta.errors.length > 0 && (
-                          <em className="text-xs text-rose-700">
-                            {field.state.meta.errors
-                              .map((e) => e?.message)
-                              .join(", ")}
-                          </em>
-                        )}
+                        {field.state.meta.errors.length > 0 &&
+                          field.state.meta.isDirty && (
+                            <em className="text-xs text-rose-700">
+                              {field.state.meta.errors
+                                .map((e) => e?.message)
+                                .join(", ")}
+                            </em>
+                          )}
                       </Label>
                       <Input
                         id={field.name}
@@ -247,13 +251,123 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
                         value={field.state.value}
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
-                        placeholder={"Email or @username"}
+                        placeholder="john.doe@example.com"
+                        className={cn(
+                          field.state.meta.errors.length > 0 &&
+                            field.state.meta.isDirty &&
+                            "ring-rose-700 ring-2",
+                        )}
+                        autoFocus
+                      />
+                    </>
+                  )}
+                </form.Field>
+              </div>
+              <div className="grid gap-3">
+                <form.Field name="password">
+                  {(field) => (
+                    <>
+                      <Label htmlFor="password" className="inline-flex gap-1">
+                        Password
+                        {field.state.meta.errors.length > 0 &&
+                          field.state.meta.isDirty && (
+                            <em className="text-xs text-rose-700">
+                              {field.state.meta.errors
+                                .map((e) => e?.message)
+                                .join(", ")}
+                            </em>
+                          )}
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
                         className={
-                          field.state.meta.errors.length > 0
+                          field.state.meta.errors.length > 0 &&
+                          field.state.meta.isDirty
                             ? "ring-rose-700 ring-2"
                             : ""
                         }
-                        type="email"
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="•••••••••••••••"
+                      />
+                    </>
+                  )}
+                </form.Field>
+              </div>
+              <div className="grid gap-3">
+                <form.Field
+                  name="confirmPassword"
+                  validators={{
+                    onChangeListenTo: ["password"],
+                    onChange: ({ value, fieldApi }) => {
+                      if (
+                        fieldApi.form.getFieldMeta("password")?.isDirty &&
+                        value !== fieldApi.form.getFieldValue("password")
+                      ) {
+                        return "Passwords do not match";
+                      }
+                      return undefined;
+                    },
+                  }}
+                >
+                  {(field) => (
+                    <>
+                      <Label
+                        htmlFor="confirmPassword"
+                        className="inline-flex gap-1"
+                      >
+                        Confirm password
+                        {field.state.meta.errors.length > 0 &&
+                          field.state.meta.isDirty && (
+                            <em className="text-xs text-rose-700">
+                              {field.state.meta.errors
+                                .map((e) =>
+                                  typeof e == "string" ? e : e?.message,
+                                )
+                                .join(", ")}
+                            </em>
+                          )}
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        className={
+                          field.state.meta.errors.length > 0 &&
+                          field.state.meta.isDirty
+                            ? "ring-rose-700 ring-2"
+                            : ""
+                        }
+                        type="password"
+                        autoComplete="off"
+                        placeholder="•••••••••••••••"
+                      />
+                    </>
+                  )}
+                </form.Field>
+              </div>
+              <div className="grid gap-3">
+                <form.Field name="name">
+                  {(field) => (
+                    <>
+                      <Label htmlFor="name">
+                        Name{" "}
+                        <span className="text-xs font-light">(optional)</span>
+                      </Label>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        type="text"
+                        placeholder="John Doe"
                       />
                     </>
                   )}
@@ -264,7 +378,7 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
                   {(field) => (
                     <>
                       <Label htmlFor="username" className="inline-flex gap-1">
-                        Username
+                        Tag
                         <span className="text-xs font-light">(optional)</span>
                       </Label>
                       <Input
@@ -279,105 +393,6 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
                             ? "ring-rose-700 ring-2"
                             : ""
                         }
-                      />
-                    </>
-                  )}
-                </form.Field>
-              </div>
-              <div className="grid gap-3">
-                <form.Field name="password">
-                  {(field) => (
-                    <>
-                      <Label htmlFor="password" className="inline-flex gap-1">
-                        Password
-                        {field.state.meta.errors.length > 0 && (
-                          <em className="text-xs text-rose-700">
-                            {field.state.meta.errors
-                              .map((e) => e?.message)
-                              .join(", ")}
-                          </em>
-                        )}
-                      </Label>
-                      <Input
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        className={
-                          field.state.meta.errors.length > 0
-                            ? "ring-rose-700 ring-2"
-                            : ""
-                        }
-                        type="password"
-                      />
-                    </>
-                  )}
-                </form.Field>
-              </div>
-              <div className="grid gap-3">
-                <form.Field
-                  name="confirmPassword"
-                  validators={{
-                    onChangeListenTo: ["password"],
-                    onBlurListenTo: ["password"],
-                    onChange: ({ value, fieldApi }) => {
-                      if (value !== fieldApi.form.getFieldValue("password")) {
-                        return "Passwords do not match";
-                      }
-                      return undefined;
-                    },
-                  }}
-                >
-                  {(field) => (
-                    <>
-                      <Label
-                        htmlFor="confirmPassword"
-                        className="inline-flex gap-1"
-                      >
-                        Confirm password
-                        {field.state.meta.errors.length > 0 && (
-                          <em className="text-xs text-rose-700">
-                            {field.state.meta.errors
-                              .map((e) =>
-                                typeof e == "string" ? e : e?.message,
-                              )
-                              .join(", ")}
-                          </em>
-                        )}
-                      </Label>
-                      <Input
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        className={
-                          field.state.meta.errors.length > 0
-                            ? "ring-rose-700 ring-2"
-                            : ""
-                        }
-                        type="password"
-                      />
-                    </>
-                  )}
-                </form.Field>
-              </div>
-              <div className="grid gap-3">
-                <form.Field name="name">
-                  {(field) => (
-                    <>
-                      <Label htmlFor="name">
-                        Name <span className="font-light">(optional)</span>
-                      </Label>
-                      <Input
-                        id={field.name}
-                        name={field.name}
-                        value={field.state.value}
-                        onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.target.value)}
-                        type="text"
-                        placeholder="John Doe"
                       />
                     </>
                   )}

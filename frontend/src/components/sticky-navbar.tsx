@@ -33,8 +33,8 @@ export default function StickyNavbar() {
   }, [lastScrollY]);
 
   const navItems = [
-    { name: "My Library", href: "/" },
-    { name: "Search", href: "/search" },
+    { name: "My Library", href: "/", scrollRestoration: true },
+    { name: "Search", href: "/search", scrollRestoration: false },
   ];
 
   return (
@@ -59,6 +59,8 @@ export default function StickyNavbar() {
                   <Link
                     key={item.name}
                     to={item.href}
+                    search={{}}
+                    resetScroll={item.scrollRestoration}
                     className="text-primary underline-offset-4 hover:underline transition-colors duration-200 text-sm"
                   >
                     {item.name}

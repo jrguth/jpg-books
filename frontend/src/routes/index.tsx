@@ -20,7 +20,7 @@ function Index() {
 
   return (
     <div className="container mx-auto space-y-4">
-      <h1 className="text-4xl font-semibold">My books</h1>
+      <h1 className="text-4xl font-semibold">My library</h1>
       {isLoading ? (
         <CenteredSpinner />
       ) : (

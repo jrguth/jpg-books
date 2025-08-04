@@ -10,7 +10,7 @@ import {
   CardAction,
 } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Bookmark } from "lucide-react";
+import { Bookmark, Check, X } from "lucide-react";
 import { useAddBook, useDeleteBook, useMyBooks } from "@/hooks/gable-api";
 import { cn } from "@/lib/utils";
 import {
@@ -41,42 +41,39 @@ export const BookCard = ({ book, className }: Props) => {
         {subtitle && <CardDescription>{subtitle}</CardDescription>}
         <CardAction className="flex items-center gap-2">
           {!isMyBooksLoading && (
-            <>
-              {book.isEbook && <Badge variant="secondary">ebook</Badge>}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger
-                    className={buttonVariants({
-                      variant: "ghost",
-                      size: "icon",
-                      className:
-                        "ml-2 h-8 w-8 p-0 shrink-0 hover:bg-secondary/40",
-                    })}
-                    disabled={isAddingBook || isDeletingBook}
-                    onClick={() => {
-                      if (isSaved) {
-                        deleteBook(savedBook.id);
-                      } else {
-                        addBook(book);
-                      }
-                    }}
-                    aria-label={
-                      isSaved ? "Remove from my books" : "Save to my library"
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger
+                  className={buttonVariants({
+                    variant: "ghost",
+                    size: "icon",
+                    className:
+                      "ml-2 h-8 w-8 p-0 shrink-0 hover:bg-secondary/40",
+                  })}
+                  disabled={isAddingBook || isDeletingBook}
+                  onClick={() => {
+                    if (isSaved) {
+                      deleteBook(savedBook.id);
+                    } else {
+                      addBook(book);
                     }
-                  >
-                    <Bookmark
-                      className={`h-4 w-4 ${isSaved ? "fill-current text-primary" : "text-muted-foreground"}`}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent
-                    className="bg-secondary text-secondary-foreground"
-                    arrowClassName="bg-secondary fill-secondary"
-                  >
-                    {isSaved ? "Remove from my library" : "Save to my library"}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </>
+                  }}
+                  aria-label={
+                    isSaved ? "Remove from my books" : "Save to my library"
+                  }
+                >
+                  <Bookmark
+                    className={`h-4 w-4 ${isSaved ? "fill-current text-primary" : "text-muted-foreground"}`}
+                  />
+                </TooltipTrigger>
+                <TooltipContent
+                  className="bg-secondary text-secondary-foreground"
+                  arrowClassName="bg-secondary fill-secondary"
+                >
+                  {isSaved ? "Remove from my library" : "Save to my library"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </CardAction>
       </CardHeader>
@@ -89,22 +86,23 @@ export const BookCard = ({ book, className }: Props) => {
               src={book.imageLinks.thumbnail}
             />
           </div>
-          <div className="flex-1 grid grid-cols-2 auto-cols-auto auto-rows-min gap-3">
-            <div className="shrink-none">
-              <p className="text-sm text-muted-foreground">
-                Author{authors.length > 1 ? "s" : ""}
-              </p>
-
-              <ul className="font-semibold">
-                {authors.map((a) => (
-                  <li key={a}>{a}</li>
-                ))}
-              </ul>
-            </div>
-            {pageCount && (
+          <div className="flex-1 grid grid-cols-2 auto-rows-min gap-3">
+            {authors.length > 0 && (
+              <div className="shrink-none">
+                <p className="text-sm text-muted-foreground">
+                  Author{authors.length > 1 ? "s" : ""}
+                </p>
+                <ul className="font-semibold">
+                  {authors.map((a) => (
+                    <li key={a}>{a}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {(pageCount ?? 0) > 0 && (
               <div>
                 <p className="text-sm text-muted-foreground">Pages</p>
-                <p className="font-semibold">{pageCount.toLocaleString()}</p>
+                <p className="font-semibold">{pageCount}</p>
               </div>
             )}
             {book.publishedDate && (
@@ -115,19 +113,37 @@ export const BookCard = ({ book, className }: Props) => {
                 </p>
               </div>
             )}
-            <div>
-              <p className="text-sm text-muted-foreground">Publisher</p>
-              <p className="font-semibold">{book.publisher}</p>
-            </div>
-            <div className="col-span-2">
-              <p className="text-sm text-muted-foreground mb-1">Genres</p>
-              <div className="flex flex-wrap">
-                {categories.map((genre, index) => (
-                  <Badge key={index} variant="secondary">
-                    {genre}
-                  </Badge>
-                ))}
+            {book.publisher && (
+              <div>
+                <p className="text-sm text-muted-foreground">Publisher</p>
+                <p className="font-semibold">{book.publisher}</p>
               </div>
+            )}
+            {categories.length > 0 && (
+              <div className="col-start-1">
+                <p className="text-sm text-muted-foreground mb-1">Genres</p>
+                <div className="flex flex-wrap">
+                  {categories.map((genre, index) => (
+                    <Badge key={index} variant="secondary">
+                      {genre}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Ebook?</p>
+              {book.isEbook ? (
+                <Check
+                  className="size-5 shrink-0 text-green-500 font-extrabold"
+                  strokeWidth={3}
+                />
+              ) : (
+                <X
+                  className="size-5 shrink-0 text-red-500 font-extrabold"
+                  strokeWidth={3}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -135,59 +151,3 @@ export const BookCard = ({ book, className }: Props) => {
     </Card>
   );
 };
-
-// export const BookCard = ({ book, showBookmark, className }: Props) => {
-//   return (
-//     <Card className={className}>
-//       <CardHeader>
-//         <div className="flex gap-4 w-full ">
-//           <img
-//             loading="lazy"
-//             className="object-cover rounded-sm w-[128px] h-[200px]"
-//             src={book.imageLinks.thumbnail}
-//           />
-
-//           <div className="grid grid-cols-[auto_1fr] items-center gap-1">
-//             <CardTitle className="text-xl col-span-2">{book.title}</CardTitle>
-//             {book.subtitle && (
-//               <CardDescription className="col-span-2">
-//                 {book.subtitle}
-//               </CardDescription>
-//             )}
-//             {book.authors.length > 0 && (
-//               <>
-//                 <Label className="text-sm">
-//                   {book.authors.length === 1 ? "Author:" : "Authors:"}
-//                 </Label>
-//                 <CardDescription>{book.authors.join(", ")}</CardDescription>
-//               </>
-//             )}
-//             <>
-//               <Label htmlFor={`page_count_${book.id}`}>Page count:</Label>
-//               <CardDescription id={`page_count_${book.id}`}>
-//                 {book.pageCount}
-//               </CardDescription>
-//             </>
-//             <>
-//               <Label>Published:</Label>
-//               <CardDescription>{book.publishedDate}</CardDescription>
-//             </>
-//             <>
-//               <Label>Categories:</Label>
-//               <div className="flex flex-wrap gap-1 mt-auto">
-//                 {book.categories.map((c) => (
-//                   <Badge variant="secondary">{c}</Badge>
-//                 ))}
-//               </div>
-//             </>
-//           </div>
-//           <div className="flex flex-col gap-1">
-//             <div className="flex gap-1"></div>
-//             <div className="flex gap-1"></div>
-//           </div>
-//         </div>
-//       </CardHeader>
-//       <CardContent></CardContent>
-//     </Card>
-//   );
-// };
