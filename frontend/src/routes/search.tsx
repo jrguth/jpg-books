@@ -19,7 +19,7 @@ function Search() {
 
   useEffect(() => {
     if (error) {
-      toast.error("Something went wrong there!", { position: "top-center" });
+      toast.error(error.message, { position: "top-center" });
     }
   }, [error]);
 

@@ -9,7 +9,7 @@ import {
   CardContent,
   CardAction,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Bookmark } from "lucide-react";
 import { useAddBook, useDeleteBook, useMyBooks } from "@/hooks/gable-api";
 import { cn } from "@/lib/utils";
@@ -35,18 +35,23 @@ export const BookCard = ({ book, className }: Props) => {
   const savedBook = myBooks?.find((b) => b.googleId === book.id);
   const isSaved = !!savedBook;
   return (
-    <Card className={cn("max-w-2xl gap-4", className)}>
-      <CardHeader>
+    <Card className={cn("max-w-4xl gap-4", className)}>
+      <CardHeader className="gap-1">
         <CardTitle className="text-xl font-semibold">{title}</CardTitle>
         {subtitle && <CardDescription>{subtitle}</CardDescription>}
-        <CardAction>
+        <CardAction className="flex items-center gap-2">
           {!isMyBooksLoading && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Button
-                    variant="ghost"
-                    size="sm"
+            <>
+              {book.isEbook && <Badge variant="secondary">ebook</Badge>}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger
+                    className={buttonVariants({
+                      variant: "ghost",
+                      size: "icon",
+                      className:
+                        "ml-2 h-8 w-8 p-0 shrink-0 hover:bg-secondary/40",
+                    })}
                     disabled={isAddingBook || isDeletingBook}
                     onClick={() => {
                       if (isSaved) {
@@ -55,7 +60,6 @@ export const BookCard = ({ book, className }: Props) => {
                         addBook(book);
                       }
                     }}
-                    className="ml-2 h-8 w-8 p-0 shrink-0 hover:bg-secondary/40"
                     aria-label={
                       isSaved ? "Remove from my books" : "Save to my library"
                     }
@@ -63,16 +67,16 @@ export const BookCard = ({ book, className }: Props) => {
                     <Bookmark
                       className={`h-4 w-4 ${isSaved ? "fill-current text-primary" : "text-muted-foreground"}`}
                     />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent
-                  className="bg-secondary text-secondary-foreground"
-                  arrowClassName="bg-secondary fill-secondary"
-                >
-                  {isSaved ? "Remove from my library" : "Save to my library"}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    className="bg-secondary text-secondary-foreground"
+                    arrowClassName="bg-secondary fill-secondary"
+                  >
+                    {isSaved ? "Remove from my library" : "Save to my library"}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
           )}
         </CardAction>
       </CardHeader>
@@ -85,8 +89,8 @@ export const BookCard = ({ book, className }: Props) => {
               src={book.imageLinks.thumbnail}
             />
           </div>
-          <div className="flex-1 grid grid-cols-2 auto-rows-min gap-3">
-            <div className="flex-1">
+          <div className="flex-1 grid grid-cols-2 auto-cols-auto auto-rows-min gap-3">
+            <div className="shrink-none">
               <p className="text-sm text-muted-foreground">
                 Author{authors.length > 1 ? "s" : ""}
               </p>
@@ -97,9 +101,23 @@ export const BookCard = ({ book, className }: Props) => {
                 ))}
               </ul>
             </div>
+            {pageCount && (
+              <div>
+                <p className="text-sm text-muted-foreground">Pages</p>
+                <p className="font-semibold">{pageCount.toLocaleString()}</p>
+              </div>
+            )}
+            {book.publishedDate && (
+              <div>
+                <p className="text-sm text-muted-foreground">Published</p>
+                <p className="font-semibold text-nowrap">
+                  {book.publishedDate}
+                </p>
+              </div>
+            )}
             <div>
-              <p className="text-sm text-muted-foreground">Pages</p>
-              <p className="font-semibold">{pageCount.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Publisher</p>
+              <p className="font-semibold">{book.publisher}</p>
             </div>
             <div className="col-span-2">
               <p className="text-sm text-muted-foreground mb-1">Genres</p>

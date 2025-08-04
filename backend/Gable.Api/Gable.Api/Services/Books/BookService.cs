@@ -43,6 +43,7 @@ public class BookService
             .Include(b => b.Users.Where(ub => ub.Id == userId))
             .FirstOrDefaultAsync(b => b.GoogleId == addBook.GoogleId);
 
+        User user = _db.Users.First(u => u.Id == userId);
         // If the book doesn't exist, create a new one
         if (book == null)
         {
@@ -54,7 +55,6 @@ public class BookService
                 Subtitle = addBook.Subtitle,
                 Description = addBook.Description,
                 GoogleMetadata = addBook.GoogleMetadata,
-                Users = [_db.Users.First(u => u.Id == userId)],
             };
             
             // Grab the genres off of the book object
@@ -75,6 +75,8 @@ public class BookService
 
             _db.Books.Add(book);
         }
+        
+        book.Users.Add(user);
 
         await _db.SaveChangesAsync();
 

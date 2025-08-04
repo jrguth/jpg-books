@@ -8,13 +8,16 @@ import { Book, BookWithMeta, GoogleBook } from "@/lib/types";
 const defaultErrorHandler = (error: Error) => {
   console.error(error);
   if (axios.isAxiosError(error)) {
-    if (error.status === 400) {
-      toast.error(error.response?.data ?? error.message, {
-        position: "top-center",
-      });
-    } else {
-      toast.error("Something went wrong there", { position: "top-center" });
-    }
+    toast.error(error.response?.data ?? error.message, {
+      position: "top-center",
+    });
+    // if (error.status === 400) {
+    //   toast.error(error.response?.data ?? error.message, {
+    //     position: "top-center",
+    //   });
+    // } else {
+    //   toast.error("Something went wrong there", { position: "top-center" });
+    // }
   }
 };
 

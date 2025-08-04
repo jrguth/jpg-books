@@ -1,10 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useDebounceValue } from "usehooks-ts";
-import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { CenteredSpinner } from "@/components/spinner";
-
-import { useBookSearch } from "@/hooks/gapi";
 import { toast } from "sonner";
 import { BookCard } from "@/components/book-card";
 import { useMyBooks } from "@/hooks/gable-api";

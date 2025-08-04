@@ -17,11 +17,12 @@ export const bookSchema = z
       subtitle: z.string().nullish(),
       authors: z.array(z.string()).default([]),
       description: z.string().nullish(),
-      publishedDate: z.string(),
+      publishedDate: z.string().nullish(),
+      publisher: z.string().default(""),
       industryIdentifiers: z
         .array(z.object({ type: z.string(), identifier: z.string() }))
         .default([]),
-      pageCount: z.number(),
+      pageCount: z.number().nullish(),
       categories: z.array(z.string()).default([]),
       imageLinks: z
         .object({
@@ -30,12 +31,26 @@ export const bookSchema = z
         })
         .default({ smallThumbnail: imageBackup, thumbnail: imageBackup }),
     }),
+    saleInfo: z
+      .object({
+        country: z.string().default(""),
+        saleability: z.string().default(""),
+        isEbook: z.boolean(),
+        retailPrice: z
+          .object({
+            amount: z.number(),
+            currencyCode: z.string(),
+          })
+          .nullish(),
+      })
+      .nullish(),
   })
   .transform((arg) => {
-    const { volumeInfo, ...rest } = arg;
+    const { volumeInfo, saleInfo, ...rest } = arg;
     return {
       ...rest,
       ...volumeInfo,
+      ...saleInfo,
     };
   });
 
