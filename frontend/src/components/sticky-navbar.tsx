@@ -33,8 +33,8 @@ export default function StickyNavbar() {
   }, [lastScrollY]);
 
   const navItems = [
-    { name: "Home", href: "#" },
-    { name: "My Library", href: "#" },
+    { name: "My Library", href: "/" },
+    { name: "Search", href: "/search" },
   ];
 
   return (
@@ -54,15 +54,12 @@ export default function StickyNavbar() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:block">
-              <div className="flex items-baseline">
+              <div className="flex items-center gap-4">
                 {navItems.map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={cn(
-                      buttonVariants({ variant: "link" }),
-                      "transition-colors duration-200",
-                    )}
+                    className="text-primary underline-offset-4 hover:underline transition-colors duration-200 text-sm"
                   >
                     {item.name}
                   </Link>

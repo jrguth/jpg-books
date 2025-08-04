@@ -1,8 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import GableApi from "@/lib/gable-api";
 import { toast } from "sonner";
 import axios from "axios";
 import { useAuth } from "./auth";
+import { Book, BookWithMeta, GoogleBook } from "@/lib/types";
 
 const defaultErrorHandler = (error: Error) => {
   console.error(error);
@@ -46,6 +47,67 @@ export const useLogin = () => {
       localStorage.setItem("jwt", data.value);
       const claims = decodeJwtClaims(data.value);
       setUser(claims);
+    },
+    onError: defaultErrorHandler,
+  });
+};
+
+export const useMyBooks = () => {
+  return useQuery({
+    queryKey: ["gable-api", "books"],
+    queryFn: async () => {
+      const res = await GableApi.get<Array<Book>>("/books");
+      return res.data.map(
+        (b) =>
+          ({
+            ...b,
+            googleMetadata: JSON.parse(b.googleMetadata),
+          }) as BookWithMeta,
+      );
+    },
+  });
+};
+
+export const useAddBook = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: GoogleBook) => {
+      const payload = {
+        title: data.title,
+        googleId: data.id,
+        googleMetadata: JSON.stringify(data),
+      };
+      const res = await GableApi.post<Book>("/books/add", payload);
+      return {
+        ...res.data,
+        googleMetadata: JSON.parse(res.data.googleMetadata),
+      } as BookWithMeta;
+    },
+    onSuccess: async (data) => {
+      const queryKey = ["gable-api", "books"];
+      queryClient.setQueryData(queryKey, (oldBooks: Array<BookWithMeta>) => [
+        ...(oldBooks ?? []),
+        data,
+      ]);
+    },
+    onError: defaultErrorHandler,
+  });
+};
+
+export const useDeleteBook = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (bookId: string) => GableApi.delete(`books/${bookId}`),
+    onSuccess: (_, bookId) => {
+      queryClient.setQueryData(
+        ["gable-api", "books"],
+        (oldBooks: Array<BookWithMeta>) =>
+          oldBooks.filter((b) => b.id !== bookId),
+      );
+      return queryClient.invalidateQueries({
+        queryKey: ["gable-api", "books"],
+      });
     },
     onError: defaultErrorHandler,
   });

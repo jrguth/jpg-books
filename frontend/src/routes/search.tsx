@@ -7,14 +7,15 @@ import { CenteredSpinner } from "@/components/spinner";
 import { useBookSearch } from "@/hooks/gapi";
 import { toast } from "sonner";
 import { BookCard } from "@/components/book-card";
-import { useMyBooks } from "@/hooks/gable-api";
 
-export const Route = createFileRoute("/")({
-  component: Index,
+export const Route = createFileRoute("/search")({
+  component: Search,
 });
 
-function Index() {
-  const { isLoading, data: books, error } = useMyBooks();
+function Search() {
+  const [query, setQuery] = useDebounceValue("", 500);
+
+  const { isLoading, data: books, error } = useBookSearch(query);
 
   useEffect(() => {
     if (error) {
@@ -24,13 +25,16 @@ function Index() {
 
   return (
     <div className="container mx-auto space-y-4">
-      <h1 className="text-4xl font-semibold">My books</h1>
-      {isLoading ? (
-        <CenteredSpinner />
-      ) : (
-        <div className="flex flex-col gap-4">
-          {books?.map((b) => (
-            <BookCard book={b.googleMetadata} id={b.id} />
+      <h1 className="text-4xl font-semibold">Book Search</h1>
+      <Input
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Title, author, genre, etc."
+      />
+      {isLoading && <CenteredSpinner />}
+      {!isLoading && books && (
+        <div className="w-full gap-4 flex flex-col">
+          {books.map((b) => (
+            <BookCard key={b.id} book={b} />
           ))}
         </div>
       )}

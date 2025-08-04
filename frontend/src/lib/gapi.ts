@@ -1,6 +1,6 @@
 import axios from "axios";
 import { z } from "zod";
-import { Book } from "./types";
+import { GoogleBook } from "./types";
 
 const imageBackup =
   "https://books.google.com.br/googlebooks/images/no_cover_thumb.gif";
@@ -39,7 +39,9 @@ export const bookSchema = z
     };
   });
 
-export const searchBooks = async (query: string): Promise<Array<Book>> => {
+export const searchBooks = async (
+  query: string,
+): Promise<Array<GoogleBook>> => {
   const {
     data: { items },
   } = await api.get("?q=" + query + "&maxResults=20");

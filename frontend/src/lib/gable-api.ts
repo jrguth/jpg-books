@@ -15,6 +15,7 @@ GableApi.interceptors.request.use((config) => {
 
 GableApi.interceptors.response.use((value) => {
   if (value.status === 401) {
+    localStorage.clear();
     redirect({ to: "/" });
   }
   return value;

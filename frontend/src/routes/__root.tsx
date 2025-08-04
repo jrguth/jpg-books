@@ -26,14 +26,11 @@ const RootComponent = () => {
   const { user } = useAuth();
   const [flow, setFlow] = useState<Flow>("login");
   return (
-    <div className="bg-background text-foreground font-sans min-h-dvh w-dvw">
+    <div className="font-sans min-h-dvh w-dvw">
       <header>
         <StickyNavbar />
       </header>
-      <main className="mt-10 p-8 flex flex-col gap-16">
-        <h1 className="text-4xl leading-none font-bold text-center">
-          Books Books Books!
-        </h1>
+      <main className="mt-12 p-8 flex flex-col gap-16">
         {user ? (
           <Outlet />
         ) : flow == "login" ? (
@@ -227,6 +224,7 @@ function RegisterForm({ setFlow }: { setFlow: (flow: Flow) => void }) {
               e.stopPropagation();
               void form.handleSubmit();
             }}
+            autoComplete="off"
           >
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
